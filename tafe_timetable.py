@@ -15,18 +15,17 @@ def timetable_lookup():
 
     dropdown = driver.find_element("id","Database")
     dd = Select(dropdown)
-
     dd.select_by_value("TQBN")
-    time.sleep(0.5)
-
     search_table = driver.find_element("id","CelcatGroupNames")
     search_table.send_keys("ICT30120 Cert III Information Technology (Web) Jul 2023 South Bank")
-    time.sleep(0.5) # temp solution to wait until webpage updates to load in timetable
+    time.sleep(0.5) # Temp solution to wait until webpage updates to load in timetable
+                    # This part takes a while to load on server side. If anything happens, increase the timer.
 
     search_table_selector = driver.find_element("xpath", "//ul[@class='ui-menu ui-widget ui-widget-content ui-autocomplete ui-front']//li[@class='ui-menu-item']/div")
     search_table_selector.click()
-    time.sleep(0.5)
+    time.sleep(0.1) # Needed for contents to laod inorder to take a screenshot.
 
+    # Takes a screenshot of the timetable.
     S = lambda X: driver.execute_script('return document.body.parentNode.scroll'+X)
     driver.set_window_size(S('Width'),S('Height')) # May need manual adjustment                                                                                                                
     driver.find_element("xpath","//div[@id='GroupTable']").screenshot('timetable.png')
