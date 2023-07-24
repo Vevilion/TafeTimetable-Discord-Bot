@@ -23,11 +23,11 @@ def timetable_lookup():
 
     search_table_selector = driver.find_element("xpath", "//ul[@class='ui-menu ui-widget ui-widget-content ui-autocomplete ui-front']//li[@class='ui-menu-item']/div")
     search_table_selector.click()
-    time.sleep(0.1) # Needed for contents to laod inorder to take a screenshot.
+    time.sleep(0.5) # Needed for contents to laod inorder to take a screenshot.
 
     # Takes a screenshot of the timetable.
     S = lambda X: driver.execute_script('return document.body.parentNode.scroll'+X)
     driver.set_window_size(S('Width'),S('Height')) # May need manual adjustment                                                                                                                
-    driver.find_element("xpath","//div[@id='GroupTable']").screenshot('timetable.png')
+    driver.find_element("xpath","//div[@id='GroupTable']").screenshot('new_timetable.png')
 
     driver.quit()
