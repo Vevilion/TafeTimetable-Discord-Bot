@@ -1,6 +1,7 @@
 import os
 import discord
 import asyncio
+import shutil
 import tafe_timetable
 from datetime import date, datetime, timedelta
 from image_recognition import compare_images
@@ -14,14 +15,14 @@ def on_start():
 
     @bot.event
     async def on_ready():
-        await bot.change_presence(status=discord.Status.dnd, activity=discord.Game(name="!timetable"))
+        await bot.change_presence(status=discord.Status.dnd, activity=discord.Game(name="!commands"))
         print(f'{bot.user} is now running!')
 
 
     @bot.command()
     async def timetable(ctx): # Change to 'timetable' when on main build. # 'tt' is for testing purposes.
         try:
-            message = await ctx.send("Fetching timetable...")
+            message = await ctx.send(">>> Fetching timetable...")
             tafe_timetable.timetable_lookup()
 
             file = discord.File("new_timetable.png", filename="new_timetable.png")
@@ -31,10 +32,12 @@ def on_start():
                 os.remove('manual_timetable.png')
             except Exception as e:
                 print(e)
+                pass
             os.rename('new_timetable.png', 'manual_timetable.png')
+            shutil.copyfile('manual_timetable.png', 'timetable.png')
             # This will fail if update function runs at the same time when timetable is deleted.
 
-            await message.edit(content="Most recent timetable:")
+            await message.edit(content=">>> Most recent timetable:")
         except Exception as e:
             print(e)
             await ctx.send(">>> **Error fetching timetable.**\nWebsite is down or overloaded.\nPlease try again later!\nIf this issue persists, please contact the developer")
@@ -66,9 +69,9 @@ def on_start():
             try: 
                 await update_timetable(ctx)
                 now = datetime.now()
-                next_update = now.replace(hour=1, minute=22, second=0, microsecond=0)
+                next_update = now.replace(hour=7, minute=0, second=0)
                 if now > next_update:
-                    next_update += timedelta(minutes=1)
+                    next_update += timedelta(days=1)
                 delta = next_update - now
                 if delta.total_seconds() < 0:
                     delta = abs(delta)
@@ -104,7 +107,7 @@ def on_start():
 
     @bot.command()
     async def auto_update(ctx, arg=None):
-        print(arg)
+        #print(arg)
         if arg == 'on':
             await start_loop(ctx)
         elif arg == 'off':
