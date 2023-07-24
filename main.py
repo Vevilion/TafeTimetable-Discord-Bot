@@ -32,7 +32,7 @@ def on_start():
             except Exception as e:
                 print(e)
             os.rename('new_timetable.png', 'manual_timetable.png')
-            # This this fail if update function runs at the same time when timetable is deleted.
+            # This will fail if update function runs at the same time when timetable is deleted.
 
             await message.edit(content="Most recent timetable:")
         except Exception as e:
