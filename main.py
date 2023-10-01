@@ -122,7 +122,7 @@ def on_start():
 
     @bot.command()
     async def commands(ctx):
-        await ctx.send(">>> **Commands:**\n`!timetable` - Fetches the latest timetable\n`!auto_update on/off` - Turns on/off auto daily timetable updates. Default set to 7am\n `!reset` - Clears local cache\n`!commands` - Displays this message")
+        await ctx.send(">>> **Commands:**\n`!timetable` - Fetches the latest timetable\n`!auto_update on/off` - Turns on/off auto daily timetable updates. Default set to 7am\n`!reset` - Clears local cache\n`!commands` - Displays this message")
 
     @bot.command()
     async def reset(ctx):
