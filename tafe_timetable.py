@@ -8,8 +8,8 @@ from selenium.webdriver.support.select import Select
 
 def timetable_lookup():
     options = Options()
-    options.headless = True
-    options.add_experimental_option("detach", True)
+    options.add_argument("--headless=new")
+
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     driver.get("https://timetables.tafeqld.edu.au/Group")
 
@@ -18,12 +18,12 @@ def timetable_lookup():
     dd.select_by_value("TQBN")
     search_table = driver.find_element("id","CelcatGroupNames")
     search_table.send_keys("ICT30120 Cert III Information Technology (Web) Jul 2023 South Bank")
-    time.sleep(0.5) # Temp solution to wait until webpage updates to load in timetable
+    time.sleep(2) # Temp solution to wait until webpage updates to load in timetable
                     # This part takes a while to load on server side. If anything happens, increase the timer.
 
     search_table_selector = driver.find_element("xpath", "//ul[@class='ui-menu ui-widget ui-widget-content ui-autocomplete ui-front']//li[@class='ui-menu-item']/div")
     search_table_selector.click()
-    time.sleep(0.5) # Needed for contents to laod inorder to take a screenshot.
+    time.sleep(2) # Needed for contents to laod inorder to take a screenshot.
 
     # Takes a screenshot of the timetable.
     S = lambda X: driver.execute_script('return document.body.parentNode.scroll'+X)
