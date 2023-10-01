@@ -11,8 +11,6 @@ bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 loop = False
 def on_start():
     TOKEN = '[YOUR TOKEN HERE]'
-    #TEST_TOKEN = '[my other test bot]'
-
     @bot.event
     async def on_ready():
         await bot.change_presence(status=discord.Status.dnd, activity=discord.Game(name="!commands"))
@@ -48,13 +46,20 @@ def on_start():
         now = date.today()
         try:
             tafe_timetable.timetable_lookup()
-            os.rename('new_timetable.png', 'compare_timetable.png')
+            try:
+                os.remove('compare_timetable.png')
+            except Exception as e:
+                print(e)
+            shutil.copyfile('new_timetable.png', 'compare_timetable.png')
+            os.remove('new_timetable.png')
+            #os.rename('new_timetable.png', 'compare_timetable.png')
             if compare_images() == 'None':
                 msg = await ctx.send(f">>> Timetable has not been updated on **{now.strftime('%d/%m/%Y')}** at **{datetime.now().strftime('%H:%M:%S')}**")
                 os.remove('compare_timetable.png')
                 #await msg.delete(delay=10)
-            else:   
-                await ctx.send(f">>> @everyone Latest timetable update: **{now.strftime('%d/%m/%Y')}** at **{datetime.now().strftime('%H:%M:%S')}**")
+            else:
+                # quick fix: removed everyone ping.
+                await ctx.send(f">>> Latest timetable update: **{now.strftime('%d/%m/%Y')}** at **{datetime.now().strftime('%H:%M:%S')}**")
                 file = discord.File("compare_timetable.png", filename="compare_timetable.png")
                 await ctx.send(file=file)
 
@@ -62,7 +67,7 @@ def on_start():
                 os.rename('compare_timetable.png', 'timetable.png')
         except Exception as e:
             print(e)
-            await ctx.send("Error")     
+            await ctx.send(e)     
 
 
     async def daily_update(ctx):
@@ -71,7 +76,7 @@ def on_start():
                 now = datetime.now()
                 next_update = now.replace(hour=7, minute=0, second=0)
                 if now > next_update:
-                    next_update += timedelta(days=1)
+                    next_update += timedelta(days=1) # How many days until next update
                 delta = next_update - now
                 if delta.total_seconds() < 0:
                     delta = abs(delta)
@@ -117,7 +122,31 @@ def on_start():
 
     @bot.command()
     async def commands(ctx):
-        await ctx.send(">>> **Commands:**\n`!timetable` - Fetches the latest timetable\n`!auto_update on/off` - Turns on/off auto daily timetable updates. Default set to 7am\n`!commands` - Displays this message")
+        await ctx.send(">>> **Commands:**\n`!timetable` - Fetches the latest timetable\n`!auto_update on/off` - Turns on/off auto daily timetable updates. Default set to 7am\n `!reset` - Clears cache\n`!commands` - Displays this message")
+
+    @bot.command()
+    async def reset(ctx):
+        msg = await ctx.send(">>> Attempting to clear local cache...")
+        try:
+            os.remove('new_timetable.png')
+            os.remove('compare_timetable.png')
+            os.remove('manual_timetable.png')
+            os.remove('timetable.png')
+        except Exception as e:
+            print(e)
+            pass
+
+        tafe_timetable.timetable_lookup()
+        try:
+            os.remove('manual_timetable.png')
+        except Exception as e:
+            print(e)
+            pass
+        os.rename('new_timetable.png', 'manual_timetable.png')
+        shutil.copyfile('manual_timetable.png', 'timetable.png')
+
+        await msg.edit(content=">>> Cache has been cleared")
+
 
     bot.run(TOKEN)
 
